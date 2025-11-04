@@ -1,5 +1,5 @@
 # SRIM-nix!
-Declarative packaging for SRIM (The Stopping and Range of Ions in Matter - https://www.srim.org/) using nix flakes + wrapWine by lucasew (https://github.com/lucasew/nixcfg/blob/e542e743774f499f996a4f886a8d4a4133fce258/packages/wrapWine.nix). Since it's packaged with nix, it will just work!
+Declarative packaging for SRIM ([The Stopping and Range of Ions in Matter]https://www.srim.org/) using nix flakes + wrapWine by [lucasew]https://github.com/lucasew/nixcfg/blob/e542e743774f499f996a4f886a8d4a4133fce258/packages/wrapWine.nix. Since it's packaged with nix, it will just work!
 
 ## Usage
 ### Standalone
@@ -12,16 +12,16 @@ nix build
 ### NixOS Configuration
 ```
 # in your flake.nix
-inputs = { ...
+inputs = { # your other inputs
     SRIM.url = "github:ewtodd/SRIM-nix";
 };
-...
+# ...
 # in your configuration.nix
 { inputs, ...}: let SRIM = inputs.SRIM.packages."x86_64-linux".default;
 in {
-  ...
-environment.systemPackages = [ ... SRIM ... ];
-...
+ # ...
+environment.systemPackages = [ SRIM ];
+# ...
 }
 ```
 
