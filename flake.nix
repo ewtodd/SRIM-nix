@@ -78,7 +78,7 @@
           name = "SRIM";
           desktopName = "SRIM";
           type = "Application";
-          exec = "${srim_bin}/bin/srim";
+          exec = "${srim_bin}/bin/SRIM";
         };
         srim = pkgs.symlinkJoin {
           name = "SRIM";
