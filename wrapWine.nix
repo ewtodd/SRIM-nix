@@ -1,31 +1,27 @@
-{pkgs}:
-with pkgs; {
+{ pkgs }:
+with pkgs;
+{
   # https://github.com/lucasew/nixcfg/blob/b22b1007a1dc59fd6db17b199ed29f45c053977b/nix/pkgs/wrapWine.nix
-  wrapWine = let
-    inherit (builtins) length concatStringsSep;
-    inherit (pkgs) lib cabextract writeShellScriptBin;
-    inherit (lib) makeBinPath;
-  in
+  wrapWine =
+    let
+      inherit (builtins) length concatStringsSep;
+      inherit (pkgs) lib cabextract writeShellScriptBin;
+      inherit (lib) makeBinPath;
+    in
     {
       is64bits ? false,
-      wine ?
-        if is64bits
-        then pkgs.wineWowPackages.stable
-        else pkgs.wine,
+      wine ? if is64bits then pkgs.wineWow64Packages.stable else pkgs.wine,
       wineFlags ? "",
       executable,
       chdir ? null,
       name,
-      tricks ? [],
+      tricks ? [ ],
       setupScript ? "",
       firstrunScript ? "",
       home ? "",
-    }: let
-      wineBin = "${wine}/bin/wine${
-        if is64bits
-        then "64"
-        else ""
-      }";
+    }:
+    let
+      wineBin = "${wine}/bin/wine${if is64bits then "64" else ""}";
       requiredPackages = [
         wine
         cabextract
@@ -33,27 +29,22 @@ with pkgs; {
       WINENIX_PROFILES = "$HOME/WINENIX_PROFILES";
       PATH = makeBinPath requiredPackages;
       NAME = name;
-      HOME =
-        if home == ""
-        then "${WINENIX_PROFILES}/${name}"
-        else home;
-      WINEARCH =
-        if is64bits
-        then "win64"
-        else "win32";
+      HOME = if home == "" then "${WINENIX_PROFILES}/${name}" else home;
+      WINEARCH = if is64bits then "win64" else "win32";
       setupHook = ''
         ${wine}/bin/wineboot
       '';
       tricksHook =
-        if (length tricks) > 0
-        then let
-          tricksStr = concatStringsSep " " tricks;
-          tricksCmd = ''
-            ${winetricks}/bin/winetricks ${tricksStr}
-          '';
-        in
+        if (length tricks) > 0 then
+          let
+            tricksStr = concatStringsSep " " tricks;
+            tricksCmd = ''
+              ${winetricks}/bin/winetricks ${tricksStr}
+            '';
+          in
           tricksCmd
-        else "";
+        else
+          "";
       script = writeShellScriptBin name ''
         export APP_NAME="${NAME}"
         export WINEARCH=${WINEARCH}
@@ -76,11 +67,7 @@ with pkgs; {
           ln -s "$HOME" "$WINEPREFIX/drive_c/users/$USER"
           ${firstrunScript}
         fi
-        ${
-          if chdir != null
-          then ''cd "${chdir}"''
-          else ""
-        }
+        ${if chdir != null then ''cd "${chdir}"'' else ""}
         if [ ! "$REPL" == "" ]; # if $REPL is setup then start a shell in the context
         then
           bash
@@ -91,5 +78,5 @@ with pkgs; {
         wineserver -w
       '';
     in
-      script;
+    script;
 }

@@ -6,17 +6,18 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { nixpkgs, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    { nixpkgs, flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs { inherit system; };
         wrapWine = ((import ./wrapWine.nix) { inherit pkgs; }).wrapWine;
         installer = builtins.fetchurl {
           url = "http://srim.org/SRIM/SRIM-2013-Std.e";
-          sha256 =
-            "sha256:0vw8siwpn6m3rxarrw24y89j2405qjk6ns80jfq74zpisd5q343z";
+          sha256 = "sha256:0vw8siwpn6m3rxarrw24y89j2405qjk6ns80jfq74zpisd5q343z";
         };
-        wine = pkgs.wineWowPackages.stagingFull;
+        wine = pkgs.wineWow64Packages.stagingFull;
         srim_bin = wrapWine {
           wine = wine;
           name = "SRIM";
@@ -82,12 +83,17 @@
         };
         srim = pkgs.symlinkJoin {
           name = "SRIM";
-          paths = [ srim_bin srim_desktop ];
+          paths = [
+            srim_bin
+            srim_desktop
+          ];
         };
-      in {
+      in
+      {
         packages = {
           srim = srim;
           default = srim;
         };
-      });
+      }
+    );
 }
