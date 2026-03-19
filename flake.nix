@@ -17,7 +17,7 @@
           url = "http://srim.org/SRIM/SRIM-2013-Std.e";
           sha256 = "sha256:0vw8siwpn6m3rxarrw24y89j2405qjk6ns80jfq74zpisd5q343z";
         };
-        wine = pkgs.wineWow64Packages.stagingFull;
+        wine = pkgs.wine;
         srim_bin = wrapWine {
           wine = wine;
           name = "SRIM";
