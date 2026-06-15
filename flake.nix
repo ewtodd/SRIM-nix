@@ -88,10 +88,28 @@
             srim_desktop
           ];
         };
+        # Headless SR-Module driver: generates a .srim stopping-power table for
+        # one ion/gas/pressure/temperature with no GUI. Shares the same win32
+        # wine prefix as the SRIM package (~/.wine-nix/SRIM); installs SRIM
+        # there on first use if absent. No SRModule.exe is committed anywhere —
+        # it comes from the declaratively-fetched SRIM-2013 installer.
+        make-srim-table = pkgs.writeShellScriptBin "make-srim-table" (
+          ''
+            export PATH=${pkgs.lib.makeBinPath [
+              wine
+              pkgs.cabextract
+              pkgs.gawk
+              pkgs.coreutils
+            ]}:$PATH
+            export SRIM_INSTALLER=${installer}
+          ''
+          + builtins.readFile ./make-srim-table.sh
+        );
       in
       {
         packages = {
           srim = srim;
+          make-srim-table = make-srim-table;
           default = srim;
         };
       }
